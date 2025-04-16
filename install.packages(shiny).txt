@@ -1,0 +1,50 @@
+install.packages("shiny")
+install.packages("shinydashboard")
+
+# Load libraries
+library(shiny)
+library(shinydashboard)
+
+# UI
+ui <- dashboardPage(
+  dashboardHeader(title = "Simple Dashboard"),
+  dashboardSidebar(
+    sidebarMenu(
+      menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")),
+      menuItem("Plot", tabName = "plot", icon = icon("chart-line"))
+    )
+  ),
+  dashboardBody(
+    tabItems(
+      # First tab content
+      tabItem(tabName = "dashboard",
+              h2("Welcome to the Dashboard!"),
+              p("Use the sidebar to navigate.")
+      ),
+      
+      # Second tab content
+      tabItem(tabName = "plot",
+              fluidRow(
+                box(
+                  title = "Plot Controls", status = "primary", solidHeader = TRUE,
+                  sliderInput("obs", "Number of observations:", min = 10, max = 100, value = 30)
+                ),
+                box(
+                  title = "Histogram", status = "info", solidHeader = TRUE,
+                  plotOutput("distPlot")
+                )
+              )
+      )
+    )
+  )
+)
+
+# Server
+server <- function(input, output) {
+  output$distPlot <- renderPlot({
+    hist(rnorm(input$obs), col = "skyblue", border = "white")
+  })
+}
+
+# Run the app
+shinyApp(ui, server)
